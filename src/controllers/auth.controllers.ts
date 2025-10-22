@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { registerSchema, loginSchema } from "../validations/auth.schemas.js";
 import { loginUser, registerUser } from "../services/auth.service.js";
 import { console } from "inspector";
