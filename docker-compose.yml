@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: nexusvault_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: nexusvault
+    ports:
+      - "5432:5432"
+    volumes:
+      - nexusvault_data:/var/lib/postgresql/data
+
+volumes:
+  nexusvault_data:

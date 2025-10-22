@@ -15,45 +15,45 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
-  email     String    @unique
+  email     String   @unique
   password  String
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
   reviews   Review[]
-  games     Game[]    @relation("UserGames")
+  games     Game[]   @relation("UserGames")
 }
 
 model Game {
-  id              Int       @id @default(autoincrement())
-  title           String
-  coverUrl        String?
-  genre           String?
-  platform        String?
-  finishedAt      DateTime?
-  createdById     Int
-  createdBy       User      @relation(fields: [createdById], references: [id], name: "UserGames")
-  reviews         Review[]
-  tags            Tag[]     @relation("GameTags", references: [id])
+  id          Int       @id @default(autoincrement())
+  title       String
+  coverUrl    String?
+  genre       String?
+  platform    String?
+  finishedAt  DateTime?
+  createdById Int
+  createdBy   User      @relation(fields: [createdById], references: [id], name: "UserGames")
+  reviews     Review[]
+  tags        Tag[]     @relation("GameTags")
 }
 
 model Review {
-  id            Int      @id @default(autoincrement())
-  rating        Int      
-  content       String?
-  gameId        Int
-  userId        Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  content   String?
+  gameId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  game          Game     @relation(fields: [gameId], references: [id])
-  user          User     @relation(fields: [userId], references: [id])
+  game Game @relation(fields: [gameId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
-  @@unique([gameId, userId]) 
+  @@unique([gameId, userId])
 }
 
 model Tag {
-  id        Int     @id @default(autoincrement())
-  name      String  @unique
-  games     Game[]  @relation("GameTags")
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  games Game[] @relation("GameTags")
 }
