@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { registerSchema, loginSchema } from "../validations/auth.schema";
-import { loginUser, registerUser } from "../services/auth.service";
+import { registerSchema, loginSchema } from "../validations/auth.schemas.js";
+import { loginUser, registerUser } from "../services/auth.service.js";
 import { console } from "inspector";
 
 export async function register(req:Request, res: Response) {

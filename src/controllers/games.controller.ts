@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { createGameSchema, queryGamesSchema } from '../validations/games.schema';
-import { createGame, listGames } from '../services/games.service';
+import { createGameSchema, queryGamesSchema } from '../validations/games.schemas.js';
+import { createGame, listGames } from '../services/games.services.js';
 
 export async function createGameCtrl(req:Request, res: Response) {
     const parsed = createGameSchema.safeParse(req.body);
