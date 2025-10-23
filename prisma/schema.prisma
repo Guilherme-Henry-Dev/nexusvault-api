@@ -15,13 +15,13 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  reviews   Review[]
-  games     Game[]   @relation("UserGames")
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash") @db.VarChar(100)
+  createdAt    DateTime @default(now()) @map("created_at")
+  reviews      Review[]
+  games        Game[]   @relation("UserGames")
 }
 
 model Game {
