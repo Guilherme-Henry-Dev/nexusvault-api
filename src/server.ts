@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { authRouter } from './routes/auth.routes';
-import { gamesRouter } from './routes/games.routes';
+import { authRouter } from './routes/auth.routes.js';
+import { gamesRouter } from './routes/games.routes.js';
 
 const app = express();
 app.use(cors())
