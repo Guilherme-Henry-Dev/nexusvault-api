@@ -1,6 +1,10 @@
-import { Request, Response } from "express";
+import  type { Request, Response } from "express";
 import * as gameService from "../services/games.services.js";
 import { createGameSchema } from "../validations/games.schemas.js";
+import { gameSchema, gameUpdateSchema } from "../validations/games.schemas.js";
+
+const parsed = gameSchema.safeParse(req.body);
+if (!parsed.success) return res.status(400).json(parsed.error.format());
 
 export async function createGameCtrl(req: Request, res: Response) {
   try {
