@@ -28,7 +28,8 @@ model Game {
   id          Int       @id @default(autoincrement())
   title       String
   coverUrl    String?
-  genre       String?
+  genre       String
+  releaseYear Int    
   platform    String?
   finishedAt  DateTime?
   createdById Int

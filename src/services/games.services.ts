@@ -1,36 +1,41 @@
-import { prisma } from "../utils/prisma";
+import prisma from "../utils/prisma.js";
 
-export async function createGame(data: {
-  title: string; coverUrl?: string; genre?: string; platform?: string; finishedAt?: string; tags?: string[];
-}, userId: number) {
-  const tagsConnectOrCreate = (data.tags ?? []).map(name => ({
-    where: { name }, create: { name }
-  }));
-
-  const game = await prisma.game.create({
-    data: {
-      title: data.title,
-      coverUrl: data.coverUrl,
-      genre: data.genre,
-      platform: data.platform,
-      finishedAt: data.finishedAt ? new Date(data.finishedAt) : undefined,
-      createdById: userId,
-      tags: { connectOrCreate: tagsConnectOrCreate }
-    },
-    include: { tags: true }
-  });
-  return game;
+interface GameData {
+  title: string;
+  genre: string;
+  releaseYear: number;
+  createdById: number;
+  coverUrl?: string | null;
+  platform?: string | null;
+  finishedAt?: string | null;
+  tags?: string[];
 }
 
-export async function listGames(filters: { q?: string; genre?: string; ratingMin?: number }, userId: number) {
-  return prisma.game.findMany({
-    where: {
-      createdById: userId,
-      AND: [
-        filters.q ? { title: { contains: filters.q, mode: 'insensitive' } } : {},
-        filters.genre ? { genre: { equals: filters.genre, mode: 'insensitive' } } : {}
-      ]
+export async function createGame(data: GameData) {
+  const { tags, ...gameData } = data;
+  return await prisma.game.create({
+    data: {
+      ...gameData,
+      finishedAt: gameData.finishedAt ? new Date(gameData.finishedAt) : null,
     },
-    include: { tags: true }
   });
+}
+
+export async function getAllGames() {
+  return await prisma.game.findMany();
+}
+
+export async function getGameById(id: number) {
+  return await prisma.game.findUnique({ where: { id } });
+}
+
+export async function updateGame(id: number, data: GameData) {
+  return await prisma.game.update({
+    where: { id },
+    data,
+  });
+}
+
+export async function deleteGame(id: number) {
+  return await prisma.game.delete({ where: { id } });
 }

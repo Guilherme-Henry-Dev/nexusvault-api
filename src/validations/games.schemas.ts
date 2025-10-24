@@ -2,9 +2,10 @@ import { z } from "zod";
 
 export const createGameSchema = z.object({
     title: z.string().min(1),
-    coverUrl: z.string().url().optional(),
-    genre: z.string().optional(),
-    platform: z.string().optional(),
+    coverUrl: z.string().url().optional().nullable(),
+    genre: z.string().min(1),
+    releaseYear: z.number().int().min(1900).max(new Date().getFullYear() + 5),
+    platform: z.string().optional().nullable(),
     finishedAt: z.string().optional().nullable(),
     tags: z.array(z.string()).optional()
 });
