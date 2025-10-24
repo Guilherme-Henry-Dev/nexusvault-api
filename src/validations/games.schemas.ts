@@ -15,3 +15,11 @@ export const updateGameSchema = z.object({
     genre: z.string().optional(),
     ratingMin: z.string().optional(),
 });
+
+export const gameSchema = z.object({
+  title: z.string().min(1, "Título é obrigatório"),
+  genre: z.string().min(1, "Gênero é obrigatório"),
+  releaseYear: z.number().min(1950, "Ano inválido"),
+});
+
+export const gameUpdateSchema = gameSchema.partial();
