@@ -9,6 +9,10 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./docs/swagger.json" assert { type: "json" };
 
 const app = express();
+app.get("/", (req, res) => {
+  res.send("🚀 NexusVault API is running! Check /docs for documentation.");
+});
+
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors())
 app.use(express.json())
