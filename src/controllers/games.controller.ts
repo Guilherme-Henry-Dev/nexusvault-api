@@ -1,28 +1,26 @@
-import  type { Request, Response } from "express";
+import type { Request, Response } from "express";
 import * as gameService from "../services/games.services.js";
-import { createGameSchema } from "../validations/games.schemas.js";
-import { gameSchema, gameUpdateSchema } from "../validations/games.schemas.js";
+import { createGameSchema, gameSchema, gameUpdateSchema } from "../validations/games.schemas.js";
 
-const parsed = gameSchema.safeParse(req.body);
-if (!parsed.success) return res.status(400).json(parsed.error.format());
 
 export async function createGameCtrl(req: Request, res: Response) {
   try {
     const parsedData = {
       ...req.body,
-      releaseYear: parseInt(req.body.releaseYear)
+      releaseYear: parseInt(req.body.releaseYear),
     };
 
     const result = createGameSchema.safeParse(parsedData);
-    
+
     if (!result.success) {
-      return res.status(400).json({ 
-        error: "Dados inválidos", 
-        details: result.error.issues 
+      return res.status(400).json({
+        error: "Dados inválidos",
+        details: result.error.issues,
       });
     }
 
     const createdById = (req as any).userId;
+
     const game = await gameService.createGame({
       ...result.data,
       createdById,
@@ -35,6 +33,7 @@ export async function createGameCtrl(req: Request, res: Response) {
   }
 }
 
+
 export async function getAllGamesCtrl(req: Request, res: Response) {
   try {
     const games = await gameService.getAllGames();
@@ -44,11 +43,16 @@ export async function getAllGamesCtrl(req: Request, res: Response) {
   }
 }
 
+
 export async function getGameByIdCtrl(req: Request, res: Response) {
   try {
     const id = parseInt(req.params.id);
     const game = await gameService.getGameById(id);
-    if (!game) return res.status(404).json({ error: "Jogo não encontrado" });
+
+    if (!game) {
+      return res.status(404).json({ error: "Jogo não encontrado" });
+    }
+
     return res.json(game);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
@@ -58,14 +62,22 @@ export async function getGameByIdCtrl(req: Request, res: Response) {
 export async function updateGameCtrl(req: Request, res: Response) {
   try {
     const id = parseInt(req.params.id);
-    const { title, genre, releaseYear } = req.body;
+    const result = gameUpdateSchema.safeParse(req.body);
 
-    const updated = await gameService.updateGame(id, { title, genre, releaseYear });
+    if (!result.success) {
+      return res.status(400).json({
+        error: "Dados inválidos",
+        details: result.error.issues,
+      });
+    }
+
+    const updated = await gameService.updateGame(id, result.data);
     return res.json(updated);
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
 }
+
 
 export async function deleteGameCtrl(req: Request, res: Response) {
   try {
