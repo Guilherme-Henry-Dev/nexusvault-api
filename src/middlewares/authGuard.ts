@@ -1,17 +1,18 @@
-import jwt from "jsonwebtoken";
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
 export function authGuard(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: "Token not provided" });
-
-  const [, token] = authHeader.split(" ");
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    (req as any).userId = (decoded as any).id;
+    const header = req.headers.authorization;
+    if (!header) return res.status(401).json({ error: 'Missing Authorization header' });
+
+    const [, token] = header.split(' ');
+    if (!token) return res.status(401).json({ error: 'Invalid Authorization header' });
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { sub: number };
+    (req as any).userId = payload.sub;
     next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+  } catch (err: any) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
   }
 }

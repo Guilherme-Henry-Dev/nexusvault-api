@@ -3,11 +3,11 @@ import prisma from "../utils/prisma.js";
 interface GameData {
   title: string;
   genre: string;
-  releaseYear: number;
+  releaseYear: Date;
   createdById: number;
   coverUrl?: string | null;
   platform?: string | null;
-  finishedAt?: string | null;
+  finishedAt?: Date | null;
   tags?: string[];
 }
 

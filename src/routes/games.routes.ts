@@ -10,10 +10,10 @@ import {
 
 const gamesRouter = Router();
 
-gamesRouter.post("/", authGuard, createGameCtrl);
-gamesRouter.get("/", authGuard, getAllGamesCtrl);
-gamesRouter.get("/:id", authGuard, getGameByIdCtrl);
-gamesRouter.put("/:id", authGuard, updateGameCtrl);
-gamesRouter.delete("/:id", authGuard, deleteGameCtrl);
+gamesRouter.get('/', authGuard, getAllGamesCtrl);
+gamesRouter.get('/:id', authGuard, getGameByIdCtrl);
+gamesRouter.post('/', authGuard, createGameCtrl);
+gamesRouter.put('/:id', authGuard, updateGameCtrl);
+gamesRouter.delete('/:id', authGuard, deleteGameCtrl);
 
 export default gamesRouter;

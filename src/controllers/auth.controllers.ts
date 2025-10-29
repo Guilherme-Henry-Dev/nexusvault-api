@@ -1,36 +1,58 @@
-import type { Request, Response } from "express";
-import { registerSchema, loginSchema } from "../validations/auth.schemas.js";
-import { loginUser, registerUser } from "../services/auth.service.js";
+import type { Request, Response } from 'express';
+import type { bcrypt } from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import  prisma  from '../utils/prisma.js';
 
-export async function register(req: Request, res: Response) {
-  const parsed = registerSchema.safeParse(req.body);
-
-  if (!parsed.success)
-    return res.status(400).json(parsed.error.format());
-
-  const { name, email, password } = parsed.data;
-
+export async function registerCtrl(req: Request, res: Response) {
   try {
-    const user = await registerUser(name, email, password);
-    res.status(201).json({ id: user.id, name: user.name, email: user.email });
+    const { name, email, password } = req.body as { name: string; email: string; password: string };
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'name, email and password are required' });
+    }
+
+    const exists = await prisma.user.findUnique({ where: { email } });
+    if (exists) return res.status(400).json({ error: 'E-mail already registered' });
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
+      data: { name, email, passwordHash },
+      select: { id: true, name: true, email: true },
+    });
+
+    return res.status(201).json(user);
   } catch (e: any) {
-    res.status(400).json({ error: e.message });
+    return res.status(400).json({ error: e.message });
   }
 }
 
-export async function login(req: Request, res: Response) {
-  const parsed = loginSchema.safeParse(req.body);
-
-  // ✅ correção aqui (success)
-  if (!parsed.success)
-    return res.status(400).json(parsed.error.format());
-
-  const { email, password } = parsed.data;
-
+export async function loginCtrl(req: Request, res: Response) {
   try {
-    const result = await loginUser(email, password);
-    res.json(result);
+    const { email, password } = req.body as { email: string; password: string };
+    if (!email || !password) return res.status(400).json({ error: 'email and password are required' });
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+
+    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!ok) return res.status(400).json({ error: 'Invalid credentials' });
+
+    const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET!, { expiresIn: '7d' });
+
+    return res.json({
+      token,
+      user: { id: user.id, name: user.name, email: user.email },
+    });
   } catch (e: any) {
-    res.status(400).json({ error: e.message });
+    return res.status(400).json({ error: e.message });
   }
+}
+
+export async function meCtrl(req: Request, res: Response) {
+  const id = (req as any).userId as number;
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { id: true, name: true, email: true },
+  });
+  return res.json(user);
 }
