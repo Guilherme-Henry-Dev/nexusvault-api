@@ -8,12 +8,12 @@ import {
   deleteGameCtrl,
 } from "../controllers/games.controller.js";
 
-const gamesRouter = Router();
+const router = Router();
 
-gamesRouter.get('/', authGuard, getAllGamesCtrl);
-gamesRouter.get('/:id', authGuard, getGameByIdCtrl);
-gamesRouter.post('/', authGuard, createGameCtrl);
-gamesRouter.put('/:id', authGuard, updateGameCtrl);
-gamesRouter.delete('/:id', authGuard, deleteGameCtrl);
+router.get("/", authGuard, getAllGamesCtrl);
+router.get("/:id", authGuard, getGameByIdCtrl);
+router.post("/", authGuard, createGameCtrl);
+router.put("/:id", authGuard, updateGameCtrl);
+router.delete("/:id", authGuard, deleteGameCtrl);
 
-export default gamesRouter;
+export default router;

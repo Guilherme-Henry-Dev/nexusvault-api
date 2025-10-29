@@ -3,18 +3,18 @@ import jwt from "jsonwebtoken";
 
 export function authGuard(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
-  if (!header) return res.status(401).json({ error: "Missing Authorization header" });
-  const parts = header.split(" ");
-  if (parts.length !== 2 || parts[0] !== "Bearer") {
-    return res.status(401).json({ error: "Invalid Authorization header" });
+  if (!header) return res.status(401).json({ error: "Token não informado" });
+
+  const [scheme, token] = header.split(" ");
+  if (scheme !== "Bearer" || !token) {
+    return res.status(401).json({ error: "Token inválido" });
   }
-  const token = parts[1];
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { sub: number };
-    (req as any).userId = payload.sub;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { sub: number };
+    (req as any).userId = decoded.sub;
     next();
   } catch {
-    return res.status(401).json({ error: "Invalid or expired token" });
+    return res.status(401).json({ error: "Token expirado ou inválido" });
   }
 }
