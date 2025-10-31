@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { bcrypt } from 'bcryptjs';
+import  bcryptjs  from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import  prisma  from '../utils/prisma.js';
 
@@ -14,7 +14,7 @@ export async function registerCtrl(req: Request, res: Response) {
     const exists = await prisma.user.findUnique({ where: { email } });
     if (exists) return res.status(400).json({ error: 'E-mail already registered' });
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcryptjs.hash(password, 10);
     const user = await prisma.user.create({
       data: { name, email, passwordHash },
       select: { id: true, name: true, email: true },
@@ -34,7 +34,7 @@ export async function loginCtrl(req: Request, res: Response) {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return res.status(400).json({ error: 'Invalid credentials' });
 
-    const ok = await bcrypt.compare(password, user.passwordHash);
+    const ok = await bcryptjs.compare(password, user.passwordHash);
     if (!ok) return res.status(400).json({ error: 'Invalid credentials' });
 
     const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET!, { expiresIn: '7d' });
